@@ -25,16 +25,19 @@
                 </p>
 
                 <form method="post" action="process.php" class="form">
-                    <input id="image_file" type="file" class="form-control">
+
+                    <input name="image_file_1" id="image_file_1" type="file" class="form-control file">
+                    <input name="image_file_2" id="image_file_2" type="file" class="form-control file">
+                    <input name="image_file_3" id="image_file_3" type="file" class="form-control file">
+
                     <input id="bt_save" type="submit" value="Upload" class="btn btn-primary btn-sm">
-                    <textarea id="image_content" name="image_content" class="form-control"></textarea>
+
                 </form>
 
             </div>
         </div>
     </div>
 
-    <script src="//code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
     <script src="js/canvasresize.js?time=<?php echo time() ?>"></script>
 
 </body>

@@ -1,21 +1,54 @@
 var CanvasImages;
 
+// querySelector in jQuery style
+var $ = function(selector) {
+    return document.querySelector(selector);
+};
+
 CanvasImages = {
     init: function(selector) {
-        var imageFile = document.querySelector(selector);
+        var imageFiles = document.querySelectorAll(selector);
 
-        var imageForm = document.querySelector('form');
-        imageForm.querySelector('input[type="submit"]').disabled = true;
+        // Run setUp() on each field
+        imageFiles.forEach(CanvasImages.setUp);
 
-        imageFile.addEventListener('change', function(e) {
-            CanvasImages.placeOnCanvas(e);
-        });
     },
 
-    placeOnCanvas: function(e) {
-        CanvasImages.clearData();
+    setUp: function(field) {
+        field.addEventListener('change', function(e) {
+            CanvasImages.placeOnCanvas(field, e);
+        });
 
-        var imageContent = document.getElementById('image_content');
+        // Get input field name
+        var fieldName = field.getAttribute('id');
+
+        // Create the wrapper element that will hold the input
+        var wrapper = document.createElement('div');
+        wrapper.classList.add('cr-image');
+
+        // Create textarea to hold image data
+        var contentField = document.createElement('textarea');
+        contentField.setAttribute('name', fieldName + '_canvas_image');
+        wrapper.appendChild(contentField);
+
+        // Create preview div
+        // var canvasPreview = document.createElement('div');
+        // canvasPreview.setAttribute('class', 'cr-preview');
+        // wrapper.appendChild(canvasPreview);
+
+        // Wrap the input that holds the textarea and file input
+        field.parentNode.insertBefore(wrapper, field);
+        wrapper.appendChild(field);
+    },
+
+    placeOnCanvas: function(field, e) {
+        CanvasImages.clearData(field);
+
+        // Get field name
+        var fieldName = field.getAttribute('name');
+
+        // Target the textarea where the image data will be placed
+        var imageContent = $('textarea[name="' + fieldName + '_canvas_image"]');
         var file = e.target.files[0];
 
         if (file.type === 'image/jpeg' || file.type === 'image/png') {
@@ -59,12 +92,12 @@ CanvasImages = {
                 htmlImage.src = imageContent.value;
 
                 var imagePreview = document.createElement('div');
-                imagePreview.setAttribute('class', 'canvas-image');
+                imagePreview.setAttribute('class', 'cr-preview');
                 imagePreview.appendChild(htmlImage);
 
                 // Add files size and predicted file size under image
-                var actualSize = this.formatFileSize(file.size);
-                var predictedSize = this.formatFileSize(Math.round((dataURL.length) * (3 / 4)));
+                var actualSize = CanvasImages.formatFileSize(file.size);
+                var predictedSize = CanvasImages.formatFileSize(Math.round((dataURL.length) * (3 / 4)));
                 var sizesBox = document.createElement('div');
                 sizesBox.setAttribute('class', 'message');
                 sizesBox.innerHTML = 'Original: ' + actualSize + 'kb, Predicted: ' + predictedSize + 'kb';
@@ -72,9 +105,8 @@ CanvasImages = {
 
                 // Select the form and append the image to the
                 // bottom of the form
-                var imageForm = document.querySelector('form');
-                imageForm.appendChild(imagePreview);
-                imageForm.querySelector('input[type="submit"]').disabled = false;
+                // var imageForm = document.querySelector('form');
+                field.parentNode.appendChild(imagePreview);
 
             };
         } else {
@@ -82,8 +114,8 @@ CanvasImages = {
         }
     },
 
-    clearData: function() {
-        var imagePreview = document.querySelector('.canvas-image');
+    clearData: function(field) {
+        var imagePreview = field.parentNode.querySelector('.cr-preview');
 
         if (typeof(imagePreview) != 'undefined' && imagePreview !== null) {
             return imagePreview.parentNode.removeChild(imagePreview);
@@ -101,7 +133,21 @@ CanvasImages = {
             i = Math.floor(Math.log(bytes) / Math.log(k));
 
         return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+    },
+
+    ajax: function(url, callback) {
+        var Http;
+
+        Http = new XMLHttpRequest();
+        Http.onreadystatechange = function() {
+            if (Http.readyState == 4 && Http.status == 200) {
+                callback(Http.responseText);
+            }
+        };
+
+        Http.open('GET', url, true);
+        Http.send();
     }
 };
 
-CanvasImages.init('#image_file');
+CanvasImages.init('.file');

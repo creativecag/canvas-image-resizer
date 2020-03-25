@@ -1,28 +1,44 @@
 <?php
-if (count($_POST) && (strpos($_POST['image_content'], 'data:image') === 0)) {
-    $return = 0;
-    $img = $_POST['image_content'];
+// echo '<pre>'; print_r($_POST); echo '</pre>'; exit(__FILE__ . ':' . __LINE__);
+$message = '';
 
-    if (strpos($img, 'data:image/jpeg;base64,') === 0) {
-        $img = str_replace('data:image/jpeg;base64,', '', $img);
-        $ext = '.jpg';
-    }
-    if (strpos($img, 'data:image/png;base64,') === 0) {
-        $img = str_replace('data:image/png;base64,', '', $img);
-        $ext = '.png';
-    }
+foreach ($_POST as $key => $img) {
+    if (strpos($key, '_canvas_image') !== false) {
+        // echo $key . ' is canvas field';
 
-    $img = str_replace(' ', '+', $img);
-    $data = base64_decode($img);
-    $file = 'uploads/img' . date('YmdHis') . $ext;
+        if (strpos($img, 'data:image') !== false) {
+            // echo ' & data is image<br>';
+            // echo '<pre>';
+            // print_r($img);
+            // echo '</pre>';
 
-    if (file_put_contents($file, $data)) {
-        $return = 1;
-        $message = 'The image was saved as ' . $file . '.';
+            $return = 0;
+            if (strpos($img, 'data:image/jpeg;base64,') !== false) {
+                $img = str_replace('data:image/jpeg;base64,', '', $img);
+                $ext = '.jpg';
+            }
+            if (strpos($img, 'data:image/png;base64,') !== false) {
+                $img = str_replace('data:image/png;base64,', '', $img);
+                $ext = '.png';
+            }
+
+            $img = str_replace(' ', '+', $img);
+            $data = base64_decode($img);
+            $file = 'uploads/img-' . uniqid() . '-' . date('YmdHis') . $ext;
+
+            if (file_put_contents($file, $data)) {
+                $return = 1;
+                $message .= $file . ' saved. ';
+            } else {
+                $message .= $file . ' not saved. ';
+            }
+        } else {
+            // echo '<br>';
+        }
     } else {
-        $message = 'The image could not be saved';
+        // echo $key . ' is NOT canvas field<br>';
     }
-
-    header('Location: index.php?return=' . $return . '&message=' . $message);
-
 }
+
+// exit('<br>done');
+header('Location: index.php?return=' . $return . '&message=' . $message);
