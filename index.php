@@ -26,9 +26,9 @@
 
                 <form method="post" action="process.php" class="form">
 
-                    <input name="image_file_1" id="image_file_1" type="file" class="form-control file">
-                    <input name="image_file_2" id="image_file_2" type="file" class="form-control file">
-                    <input name="image_file_3" id="image_file_3" type="file" class="form-control file">
+                    <input name="image_file_1" id="image_file_1" type="file" class="form-control cr-file">
+                    <input name="image_file_2" id="image_file_2" type="file" class="form-control cr-file">
+                    <input name="image_file_3" id="image_file_3" type="file" class="form-control cr-file">
 
                     <input id="bt_save" type="submit" value="Upload" class="btn btn-primary btn-sm">
 

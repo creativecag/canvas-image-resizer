@@ -1,13 +1,11 @@
-var CanvasImages;
+var CanvasImages = {
+    config: {
+        'selector': '.cr-file',
+        'maxSize': 1000
+    },
 
-// querySelector in jQuery style
-var $ = function(selector) {
-    return document.querySelector(selector);
-};
-
-CanvasImages = {
-    init: function(selector) {
-        var imageFiles = document.querySelectorAll(selector);
+    init: function() {
+        var imageFiles = document.querySelectorAll(CanvasImages.config['selector']);
 
         // Run setUp() on each field
         imageFiles.forEach(CanvasImages.setUp);
@@ -48,7 +46,7 @@ CanvasImages = {
         var fieldName = field.getAttribute('name');
 
         // Target the textarea where the image data will be placed
-        var imageContent = $('textarea[name="' + fieldName + '_canvas_image"]');
+        var imageContent = document.querySelector('textarea[name="' + fieldName + '_canvas_image"]');
         var file = e.target.files[0];
 
         if (file.type === 'image/jpeg' || file.type === 'image/png') {
@@ -57,7 +55,7 @@ CanvasImages = {
             image.src = imgurl;
 
             image.onload = function() {
-                var max_size = 1000;
+                var max_size = CanvasImages.config['maxSize'];
                 var w = image.width;
                 var h = image.height;
 
@@ -103,11 +101,9 @@ CanvasImages = {
                 sizesBox.innerHTML = 'Original: ' + actualSize + 'kb, Predicted: ' + predictedSize + 'kb';
                 imagePreview.appendChild(sizesBox);
 
-                // Select the form and append the image to the
-                // bottom of the form
+                // Select the form and append the image to the bottom of the form
                 // var imageForm = document.querySelector('form');
                 field.parentNode.appendChild(imagePreview);
-
             };
         } else {
             alert('Please choose only jpg and png files.');
@@ -150,4 +146,4 @@ CanvasImages = {
     }
 };
 
-CanvasImages.init('.file');
+CanvasImages.init();
